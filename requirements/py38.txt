@@ -1,0 +1,6 @@
+flake8>=3.0,<4
+pytest-flake8dir>=2.2,<3
+pytest>=5.4,<6
+black
+isort
+mypy
