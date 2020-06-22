@@ -1,7 +1,7 @@
 import ast
 import itertools
-import pickle
-from typing import Tuple, Iterable, Union
+import tokenize
+from typing import Tuple, Iterable, Union, List
 
 ComprehensionType = Union[ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp]
 
@@ -15,11 +15,24 @@ class MCCChecker:
     name = "flake8-multiline-conditionals-comprehensions"
     version = "1.0"
 
-    def __init__(self, tree: ast.AST, file_tokens):
+    def __init__(self, tree: ast.AST, file_tokens: List[tokenize.TokenInfo]):
         self.tree = tree
         self.tokens = file_tokens
-        with open("ast.pickle", "wb") as file:
-            pickle.dump(self.tokens, file)
+
+    def _get_tokens_with_surrounding(self, node: ast.AST, margin: int) -> Iterable[tokenize.TokenInfo]:
+        start_index, end_index = None, None
+        for i, token in enumerate(self.tokens):
+            token_line, token_col = token.start
+            if (token_line > node.lineno or (token_line == node.lineno and token_col >= node.col_offset)) and (
+                    token_line < node.end_lineno or (
+                    token_line == node.end_lineno and token_col <= node.end_col_offset)):
+                if start_index is None:
+                    start_index = i
+            else:
+                if end_index is None and start_index is not None:
+                    end_index = i
+                    break
+        return self.tokens[start_index - margin:end_index + margin]
 
     def run(self) -> Iterable[Tuple[int, int, str, type]]:
         for node in ast.walk(self.tree):
@@ -30,11 +43,15 @@ class MCCChecker:
                 yield from _c2003(node)
                 yield from _c2004(node)
 
-            if isinstance(node, ast.Assign):
-                pass
+            if isinstance(node, ast.Assign) and isinstance(node.value, ast.IfExp):
+                yield from _c2021(node, list(self._get_tokens_with_surrounding(node.value, 1)))
 
             if isinstance(node, ast.IfExp):
-                pass
+                yield from _c2020(node)
+                yield from _c2022(node)
+                yield from _c2023(node)
+                yield from _c2024(node)
+                yield from _c2025(node)
 
 
 def _error_tuple(error_code: int, node: ast.AST) -> Tuple[int, int, str, type]:
@@ -114,33 +131,48 @@ def _c2020(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     A multiline conditional expression should place each of its segments on a separate line.
     """
+    if node.lineno == node.end_lineno:
+        return ()  # single line expression
+
+    if len({node.body.lineno, node.test.lineno, node.orelse.lineno}) < 3:
+        yield _error_tuple(2020, node)
 
 
-def _c2021(node: ast.Assign) -> Iterable[Tuple[int, int, str, type]]:
+def _c2021(node: ast.Assign, tokens: List[tokenize.TokenInfo]) -> Iterable[Tuple[int, int, str, type]]:
     """
     A conditional expression used for assignment must be surrounded by parantheses.
     """
+    if tokens[0].type != tokenize.OP or "(" not in tokens[0].string:
+        yield _error_tuple(2021, node)
 
 
 def _c2022(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
-    A multiline conditional expression should place each of its segments on a separate line.
+    A conditional expression should not contain further conditional expressions.
     """
+    for ancestor in itertools.chain(ast.walk(node.body), ast.walk(node.test), ast.walk(node.orelse)):
+        if isinstance(ancestor, ast.IfExp):
+            yield _error_tuple(2022, ancestor)
 
 
 def _c2023(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     A conditional expression should not span over multiple lines.
     """
+    if node.lineno != node.end_lineno:
+        yield _error_tuple(2023, node)
 
 
 def _c2024(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     A conditional expression should span over multiple lines.
     """
+    if node.lineno == node.end_lineno:
+        yield _error_tuple(2024, node)
 
 
 def _c2025(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     Conditional expressions should not be used.
     """
+    yield _error_tuple(2025, node)

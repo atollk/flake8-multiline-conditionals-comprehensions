@@ -118,18 +118,20 @@ a = (1 if something() else 0)
 
 ### C2022
 
-A multiline conditional expression should place each of its segments
-on a separate line.
+A conditional expression should not contain further conditional
+expressions.
 
 ```python
 # Bad
-1 
-if something() else 0
+1 if x > 0 else -1 if x < 0 else 0
 
 # Good
-1
-if something()
-else 0
+if x > 0:
+    return 1
+elif x < 0:
+    return -1
+else:
+    return 0
 ```
 
 
