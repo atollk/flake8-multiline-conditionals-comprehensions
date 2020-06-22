@@ -18,7 +18,7 @@ class Test_C2023(BaseTest):
                else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2023", 1, 7)
+        self.assert_error_at(result, "C2023", 1, 8)
 
     def test_fail_2(self):
         code = """
@@ -27,4 +27,4 @@ class Test_C2023(BaseTest):
                else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2023", 1, 7)
+        self.assert_error_at(result, "C2023", 1, 8)

@@ -27,5 +27,4 @@ class Test_C2024(BaseTest):
         foo = (1 if True else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2024", 1, 7)
-        assert result == []
+        self.assert_error_at(result, "C2024", 1, 8)
