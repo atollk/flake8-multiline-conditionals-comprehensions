@@ -78,7 +78,7 @@ A comprehension expression should span over multiple lines.
 
 # Good
 [x 
-for x in range(10) ]
+for x in range(10)]
 ```
 
 
