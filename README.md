@@ -74,10 +74,10 @@ A comprehension expression should span over multiple lines.
 
 ```python
 # Bad
-[x+y for x in range(10)]
+[x for x in range(10)]
 
 # Good
-[x + y 
+[x 
 for x in range(10) ]
 ```
 
