@@ -26,7 +26,7 @@ class MCCChecker:
 
     name = "flake8-multiline-conditionals-comprehensions"
     version = "1.0"
-    enabled_errors = []
+    enabled_errors = None
 
     def __init__(self, tree: ast.AST, file_tokens: List[tokenize.TokenInfo]):
         self.tree = tree
@@ -87,8 +87,23 @@ class MCCChecker:
                     yield from _c2025(node)
 
 
+ERROR_MESSAGES = {
+    2000: "Generators in comprehension expression are on the same line.",
+    2001: "Different segments of a comprehension expression share a line.",
+    2002: "Multiple filter segments within a single comprehension expression.",
+    2003: "Multiline comprehension expression are forbidden.",
+    2004: "Singleline comprehension expression are forbidden.",
+    2020: "Different segments of a conditional expression share a line.",
+    2021: "Conditional expression used for assignment not surrounded by parantheses.",
+    2022: "Nested conditional expressions are forbidden.",
+    2023: "Multiline conditional expression are forbidden.",
+    2024: "Singleline conditional expression are forbidden.",
+    2025: "Conditional expressions are forbidden.",
+}
+
+
 def _error_tuple(error_code: int, node: ast.AST) -> Tuple[int, int, str, type]:
-    return node.lineno, node.col_offset, f"C{error_code} error message", MCCChecker
+    return node.lineno, node.col_offset, f"C{error_code} {ERROR_MESSAGES[error_code]}", MCCChecker
 
 
 def _c2000(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:

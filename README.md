@@ -104,7 +104,7 @@ else 0
 
 ### C2021
 
-A conditional expression used for assignment must be surrounded by
+A conditional expression used for assignment should be surrounded by
 parantheses.
 
 ```python
