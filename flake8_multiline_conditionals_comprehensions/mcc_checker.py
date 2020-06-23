@@ -32,7 +32,7 @@ class MCCChecker:
 
     name = "flake8-multiline-conditionals-comprehensions"
     version = "1.0"
-    enabled_errors = None
+    enabled_errors = []
 
     def __init__(self, tree: ast.AST, file_tokens: List[tokenize.TokenInfo]):
         self.tree = tree
