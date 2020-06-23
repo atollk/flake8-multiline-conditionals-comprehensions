@@ -6,6 +6,16 @@
 flake8 plugin that works on conditional expressions and comprehension 
 expressions to enforce each segment to be put on a new line.
 
+## Contents
+  * [Options](#options)
+  * [Comprehension Errors](#comprehension-errors)
+  * [Condition Errors](#condition-errors)
+
+## Options
+The flag `--select_c20` can be used to select the set of errors
+to include. By default, the active errors are C2000, C2001, C2002,
+C2020, C2021, C2023.
+
 
 ## Comprehension Errors
 
