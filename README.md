@@ -1,6 +1,7 @@
 # flake8-multiline-conditionals-comprehensions
 
-[![Build Status](https://travis-ci.com/atollk/flake8-multiline-conditionals-comprehensions.png)](https://travis-ci.com/github/atollk/flake8-multiline-conditionals-comprehensions)
+[![Actions Status](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/workflows/Python tox/badge.svg)](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/actions)
+
 
 flake8 plugin that works on conditional expressions and comprehension 
 expressions to enforce each segment to be put on a new line.
