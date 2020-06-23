@@ -7,7 +7,9 @@ from typing import Tuple, Iterable, Union, List, cast
 
 import flake8.options.manager
 
-ComprehensionType = Union[ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp]
+ComprehensionType = Union[
+    ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp
+]
 
 DEFAULT_SELECT = [
     "C2000",
@@ -55,7 +57,9 @@ class MCCChecker:
         options: argparse.Namespace,
         extra_args,
     ):
-        MCCChecker.enabled_errors = [int(option[1:]) for option in options.select_c20]
+        MCCChecker.enabled_errors = [
+            int(option[1:]) for option in options.select_c20
+        ]
 
     def _get_tokens_with_surrounding(
         self, node: ast.AST, margin: int
@@ -65,11 +69,14 @@ class MCCChecker:
             token_line, token_col = token.start
             if (
                 token_line > lineno(node)
-                or (token_line == lineno(node) and token_col >= col_offset(node))
+                or (
+                    token_line == lineno(node) and token_col >= col_offset(node)
+                )
             ) and (
                 token_line < end_lineno(node)
                 or (
-                    token_line == end_lineno(node) and token_col <= end_col_offset(node)
+                    token_line == end_lineno(node)
+                    and token_col <= end_col_offset(node)
                 )
             ):
                 if start_index is None:
@@ -84,7 +91,12 @@ class MCCChecker:
         for node in ast.walk(self.tree):
             if any(
                 isinstance(node, comp)
-                for comp in [ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp]
+                for comp in [
+                    ast.ListComp,
+                    ast.SetComp,
+                    ast.DictComp,
+                    ast.GeneratorExp,
+                ]
             ):
                 if 2000 in MCCChecker.enabled_errors:
                     yield from _c2000(cast(ComprehensionType, node))
@@ -97,10 +109,13 @@ class MCCChecker:
                 if 2004 in MCCChecker.enabled_errors:
                     yield from _c2004(cast(ComprehensionType, node))
 
-            if isinstance(node, ast.Assign) and isinstance(node.value, ast.IfExp):
+            if isinstance(node, ast.Assign) and isinstance(
+                node.value, ast.IfExp
+            ):
                 if 2021 in MCCChecker.enabled_errors:
                     yield from _c2021(
-                        node, list(self._get_tokens_with_surrounding(node.value, 1))
+                        node,
+                        list(self._get_tokens_with_surrounding(node.value, 1)),
                     )
 
             if isinstance(node, ast.IfExp):
@@ -177,7 +192,9 @@ def _c2000(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
     for generator1, generator2 in itertools.combinations(node.generators, 2):
         if lineno(generator1.target) <= lineno(generator2.target) <= end_lineno(
             generator1.iter
-        ) or lineno(generator2.target) <= lineno(generator1.target) <= end_lineno(
+        ) or lineno(generator2.target) <= lineno(
+            generator1.target
+        ) <= end_lineno(
             generator2.iter
         ):
             yield _error_tuple(2000, node)
