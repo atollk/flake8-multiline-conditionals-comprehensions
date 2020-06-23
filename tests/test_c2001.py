@@ -65,7 +65,7 @@ class Test_C2001(BaseTest):
 
     def test_fail_6(self):
         code = """
-        foo = [x for x in range(10) for 
+        foo = [x for x in range(10) for
                y in range(3) if x != 0]
         """
         result = self.run_flake8(code, True)

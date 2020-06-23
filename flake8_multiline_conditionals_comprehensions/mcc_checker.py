@@ -1,8 +1,9 @@
 import argparse
 import ast
 import itertools
+import sys
 import tokenize
-from typing import Tuple, Iterable, Union, List
+from typing import Tuple, Iterable, Union, List, cast
 
 import flake8.options.manager
 
@@ -16,6 +17,11 @@ DEFAULT_SELECT = [
     "C2021",
     "C2023",
 ]
+
+PYTHON_36 = sys.version_info >= (3, 6)
+PYTHON_37 = sys.version_info >= (3, 7)
+PYTHON_38 = sys.version_info >= (3, 8)
+PYTHON_39 = sys.version_info >= (3, 9)
 
 
 class MCCChecker:
@@ -45,9 +51,9 @@ class MCCChecker:
         start_index, end_index = None, None
         for i, token in enumerate(self.tokens):
             token_line, token_col = token.start
-            if (token_line > node.lineno or (token_line == node.lineno and token_col >= node.col_offset)) and (
-                    token_line < node.end_lineno or (
-                    token_line == node.end_lineno and token_col <= node.end_col_offset)):
+            if (token_line > lineno(node) or (token_line == lineno(node) and token_col >= col_offset(node))) and (
+                    token_line < end_lineno(node) or (
+                    token_line == end_lineno(node) and token_col <= end_col_offset(node))):
                 if start_index is None:
                     start_index = i
             else:
@@ -60,15 +66,15 @@ class MCCChecker:
         for node in ast.walk(self.tree):
             if any(isinstance(node, comp) for comp in [ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp]):
                 if 2000 in MCCChecker.enabled_errors:
-                    yield from _c2000(node)
+                    yield from _c2000(cast(ComprehensionType, node))
                 if 2001 in MCCChecker.enabled_errors:
-                    yield from _c2001(node)
+                    yield from _c2001(cast(ComprehensionType, node))
                 if 2002 in MCCChecker.enabled_errors:
-                    yield from _c2002(node)
+                    yield from _c2002(cast(ComprehensionType, node))
                 if 2003 in MCCChecker.enabled_errors:
-                    yield from _c2003(node)
+                    yield from _c2003(cast(ComprehensionType, node))
                 if 2004 in MCCChecker.enabled_errors:
-                    yield from _c2004(node)
+                    yield from _c2004(cast(ComprehensionType, node))
 
             if isinstance(node, ast.Assign) and isinstance(node.value, ast.IfExp):
                 if 2021 in MCCChecker.enabled_errors:
@@ -102,8 +108,30 @@ ERROR_MESSAGES = {
 }
 
 
+def lineno(node: ast.AST):
+    return node.lineno
+
+
+def end_lineno(node: ast.AST):
+    if PYTHON_38:
+        return node.end_lineno
+    else:
+        return max(ancestor.lineno for ancestor in ast.walk(node) if hasattr(ancestor, "lineno"))
+
+
+def col_offset(node: ast.AST):
+    return node.col_offset
+
+
+def end_col_offset(node: ast.AST):
+    if PYTHON_38:
+        return node.end_col_offset
+    else:
+        return max(ancestor.col_offset for ancestor in ast.walk(node) if hasattr(ancestor, "col_offset"))
+
+
 def _error_tuple(error_code: int, node: ast.AST) -> Tuple[int, int, str, type]:
-    return node.lineno, node.col_offset, f"C{error_code} {ERROR_MESSAGES[error_code]}", MCCChecker
+    return lineno(node), col_offset(node), f"C{error_code} {ERROR_MESSAGES[error_code]}", MCCChecker
 
 
 def _c2000(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
@@ -111,8 +139,8 @@ def _c2000(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
     A comprehension expression should place each of its generators on a separate line.
     """
     for generator1, generator2 in itertools.combinations(node.generators, 2):
-        if (generator1.target.lineno <= generator2.target.lineno <= generator1.iter.end_lineno or
-                generator2.target.lineno <= generator1.target.lineno <= generator2.iter.end_lineno):
+        if (lineno(generator1.target) <= lineno(generator2.target) <= end_lineno(generator1.iter) or
+                lineno(generator2.target) <= lineno(generator1.target) <= end_lineno(generator2.iter)):
             yield _error_tuple(2000, node)
 
 
@@ -120,29 +148,29 @@ def _c2001(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
     """
     A multiline comprehension expression should place each of its segments (map, generator, filter) on a separate line.
     """
-    if node.lineno == node.end_lineno:
+    if lineno(node) == end_lineno(node):
         return ()  # single line comprehension
 
     seen_line_nos = set()
 
     for generator in node.generators:
-        if generator.target.lineno in seen_line_nos:
+        if lineno(generator.target) in seen_line_nos:
             yield _error_tuple(2001, generator.target)
-        seen_line_nos.add(generator.target.lineno)
+        seen_line_nos.add(lineno(generator.target))
 
         for if_clause in generator.ifs:
-            if if_clause.lineno in seen_line_nos:
+            if lineno(if_clause) in seen_line_nos:
                 yield _error_tuple(2001, if_clause)
-            seen_line_nos.add(if_clause.lineno)
+            seen_line_nos.add(lineno(if_clause))
 
     if isinstance(node, ast.DictComp):
-        if node.value.lineno in seen_line_nos:
+        if lineno(node.value) in seen_line_nos:
             yield _error_tuple(2001, node.key)
-        seen_line_nos.add(node.value.lineno)
+        seen_line_nos.add(lineno(node.value))
     else:
-        if node.elt.lineno in seen_line_nos:
+        if lineno(node.elt) in seen_line_nos:
             yield _error_tuple(2001, node.elt)
-        seen_line_nos.add(node.elt.lineno)
+        seen_line_nos.add(lineno(node.elt))
 
 
 def _c2002(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
@@ -161,7 +189,7 @@ def _c2003(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
     """
     A comprehension expression should not span over multiple lines.
     """
-    if node.lineno != node.end_lineno:
+    if lineno(node) != end_lineno(node):
         yield _error_tuple(2003, node)
 
 
@@ -169,7 +197,7 @@ def _c2004(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
     """
     A comprehension expression should span over multiple lines.
     """
-    if node.lineno == node.end_lineno:
+    if lineno(node) == end_lineno(node):
         yield _error_tuple(2004, node)
 
 
@@ -177,10 +205,10 @@ def _c2020(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     A multiline conditional expression should place each of its segments on a separate line.
     """
-    if node.lineno == node.end_lineno:
+    if lineno(node) == end_lineno(node):
         return ()  # single line expression
 
-    if len({node.body.lineno, node.test.lineno, node.orelse.lineno}) < 3:
+    if len({lineno(node.body), lineno(node.test), lineno(node.orelse)}) < 3:
         yield _error_tuple(2020, node)
 
 
@@ -205,7 +233,7 @@ def _c2023(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     A conditional expression should not span over multiple lines.
     """
-    if node.lineno != node.end_lineno:
+    if lineno(node) != end_lineno(node):
         yield _error_tuple(2023, node)
 
 
@@ -213,7 +241,7 @@ def _c2024(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     A conditional expression should span over multiple lines.
     """
-    if node.lineno == node.end_lineno:
+    if lineno(node) == end_lineno(node):
         yield _error_tuple(2024, node)
 
 

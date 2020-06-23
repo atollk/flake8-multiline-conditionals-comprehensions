@@ -1,3 +1,4 @@
+from flake8_multiline_conditionals_comprehensions.mcc_checker import PYTHON_38
 from tests.util import BaseTest
 
 
@@ -33,4 +34,4 @@ class Test_C2003(BaseTest):
                3)]
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2003", 1, 7)
+        self.assert_error_at(result, "C2003", 1, 7 if PYTHON_38 else 8)
