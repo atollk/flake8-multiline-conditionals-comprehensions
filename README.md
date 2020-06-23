@@ -1,6 +1,9 @@
 # flake8-multiline-conditionals-comprehensions
 
-[![Build Status](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/workflows/Python%20tox/badge.svg)](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/actions)
+[![Build Status](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/workflows/tox/badge.svg)](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/actions)
+[![Build Status](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/workflows/pylint/badge.svg)](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/actions)
+[![Build Status](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/workflows/black/badge.svg)](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/actions)
+[![Build Status](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/workflows/flake8/badge.svg)](https://github.com/atollk/flake8-multiline-conditionals-comprehensions/actions)
 
 
 flake8 plugin that works on conditional expressions and comprehension 
