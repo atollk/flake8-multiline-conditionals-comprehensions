@@ -1,5 +1,4 @@
 name: Black
-uses: lgeiger/black-action@v1.0.1
 on: [push]
 
 jobs:
