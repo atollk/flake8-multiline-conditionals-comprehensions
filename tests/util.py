@@ -36,11 +36,18 @@ class BaseTest(abc.ABC):
         result = self.flake8dir.run_flake8(args)
         return [ReportedMessage.from_raw(report) for report in result.out_lines]
 
-    def assert_error_at(self, reported_errors: List[ReportedMessage], error_code: str, line: int, col: int) -> None:
+    def assert_error_at(
+        self,
+        reported_errors: List[ReportedMessage],
+        error_code: str,
+        line: int,
+        col: int,
+    ) -> None:
         error_found = any(
             report.line == line and report.col == col and report.code == error_code
             for report in reported_errors
         )
         if not error_found:
             pytest.fail(
-                f"No error with code {error_code} at {line}:{col} found. Reported errors are: {reported_errors}")
+                f"No error with code {error_code} at {line}:{col} found. Reported errors are: {reported_errors}"
+            )

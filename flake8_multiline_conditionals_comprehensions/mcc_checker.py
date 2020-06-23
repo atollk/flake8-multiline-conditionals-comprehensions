@@ -40,31 +40,52 @@ class MCCChecker:
 
     @staticmethod
     def add_options(option_manager: flake8.options.manager.OptionManager):
-        option_manager.add_option('--select_c20', type=str, comma_separated_list=True, default=DEFAULT_SELECT,
-                                  parse_from_config=True, help="Error types to use. Default: %(default)s")
+        option_manager.add_option(
+            "--select_c20",
+            type=str,
+            comma_separated_list=True,
+            default=DEFAULT_SELECT,
+            parse_from_config=True,
+            help="Error types to use. Default: %(default)s",
+        )
 
     @staticmethod
-    def parse_options(option_manager: flake8.options.manager.OptionManager, options: argparse.Namespace, extra_args):
+    def parse_options(
+        option_manager: flake8.options.manager.OptionManager,
+        options: argparse.Namespace,
+        extra_args,
+    ):
         MCCChecker.enabled_errors = [int(option[1:]) for option in options.select_c20]
 
-    def _get_tokens_with_surrounding(self, node: ast.AST, margin: int) -> Iterable[tokenize.TokenInfo]:
+    def _get_tokens_with_surrounding(
+        self, node: ast.AST, margin: int
+    ) -> Iterable[tokenize.TokenInfo]:
         start_index, end_index = None, None
         for i, token in enumerate(self.tokens):
             token_line, token_col = token.start
-            if (token_line > lineno(node) or (token_line == lineno(node) and token_col >= col_offset(node))) and (
-                    token_line < end_lineno(node) or (
-                    token_line == end_lineno(node) and token_col <= end_col_offset(node))):
+            if (
+                token_line > lineno(node)
+                or (token_line == lineno(node) and token_col >= col_offset(node))
+            ) and (
+                token_line < end_lineno(node)
+                or (
+                    token_line == end_lineno(node) and token_col <= end_col_offset(node)
+                )
+            ):
                 if start_index is None:
                     start_index = i
             else:
                 if end_index is None and start_index is not None:
                     end_index = i
                     break
-        return self.tokens[start_index - margin:end_index + margin]
+        return self.tokens[start_index - margin : end_index + margin]
 
     def run(self) -> Iterable[Tuple[int, int, str, type]]:
         for node in ast.walk(self.tree):
-            if any(isinstance(node, comp) for comp in [ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp]):
+            if any(
+                isinstance(node, comp)
+                for comp in [ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp]
+            ):
                 if 2000 in MCCChecker.enabled_errors:
                     yield from _c2000(cast(ComprehensionType, node))
                 if 2001 in MCCChecker.enabled_errors:
@@ -78,7 +99,9 @@ class MCCChecker:
 
             if isinstance(node, ast.Assign) and isinstance(node.value, ast.IfExp):
                 if 2021 in MCCChecker.enabled_errors:
-                    yield from _c2021(node, list(self._get_tokens_with_surrounding(node.value, 1)))
+                    yield from _c2021(
+                        node, list(self._get_tokens_with_surrounding(node.value, 1))
+                    )
 
             if isinstance(node, ast.IfExp):
                 if 2020 in MCCChecker.enabled_errors:
@@ -116,7 +139,11 @@ def end_lineno(node: ast.AST):
     if PYTHON_38:
         return node.end_lineno
     else:
-        return max(ancestor.lineno for ancestor in ast.walk(node) if hasattr(ancestor, "lineno"))
+        return max(
+            ancestor.lineno
+            for ancestor in ast.walk(node)
+            if hasattr(ancestor, "lineno")
+        )
 
 
 def col_offset(node: ast.AST):
@@ -127,11 +154,20 @@ def end_col_offset(node: ast.AST):
     if PYTHON_38:
         return node.end_col_offset
     else:
-        return max(ancestor.col_offset for ancestor in ast.walk(node) if hasattr(ancestor, "col_offset"))
+        return max(
+            ancestor.col_offset
+            for ancestor in ast.walk(node)
+            if hasattr(ancestor, "col_offset")
+        )
 
 
 def _error_tuple(error_code: int, node: ast.AST) -> Tuple[int, int, str, type]:
-    return lineno(node), col_offset(node), f"C{error_code} {ERROR_MESSAGES[error_code]}", MCCChecker
+    return (
+        lineno(node),
+        col_offset(node),
+        f"C{error_code} {ERROR_MESSAGES[error_code]}",
+        MCCChecker,
+    )
 
 
 def _c2000(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
@@ -139,8 +175,11 @@ def _c2000(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
     A comprehension expression should place each of its generators on a separate line.
     """
     for generator1, generator2 in itertools.combinations(node.generators, 2):
-        if (lineno(generator1.target) <= lineno(generator2.target) <= end_lineno(generator1.iter) or
-                lineno(generator2.target) <= lineno(generator1.target) <= end_lineno(generator2.iter)):
+        if lineno(generator1.target) <= lineno(generator2.target) <= end_lineno(
+            generator1.iter
+        ) or lineno(generator2.target) <= lineno(generator1.target) <= end_lineno(
+            generator2.iter
+        ):
             yield _error_tuple(2000, node)
 
 
@@ -212,7 +251,9 @@ def _c2020(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
         yield _error_tuple(2020, node)
 
 
-def _c2021(node: ast.Assign, tokens: List[tokenize.TokenInfo]) -> Iterable[Tuple[int, int, str, type]]:
+def _c2021(
+    node: ast.Assign, tokens: List[tokenize.TokenInfo]
+) -> Iterable[Tuple[int, int, str, type]]:
     """
     A conditional expression used for assignment must be surrounded by parantheses.
     """
@@ -224,7 +265,9 @@ def _c2022(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     A conditional expression should not contain further conditional expressions.
     """
-    for ancestor in itertools.chain(ast.walk(node.body), ast.walk(node.test), ast.walk(node.orelse)):
+    for ancestor in itertools.chain(
+        ast.walk(node.body), ast.walk(node.test), ast.walk(node.orelse)
+    ):
         if isinstance(ancestor, ast.IfExp):
             yield _error_tuple(2022, ancestor)
 
