@@ -21,7 +21,7 @@ class Test_MCC200(BaseTest):
         foo = [x for x in range(10) for y in range(3)]
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC200", 1, 7 if PYTHON_38 else 8)
+        self.assert_error_at(result, "MCC200", 2, 7 if PYTHON_38 else 8)
 
     @pytest.mark.skip("TODO this probably needs Token parsing")
     def test_fail_2(self):
@@ -30,7 +30,7 @@ class Test_MCC200(BaseTest):
                y in range(3))
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC200", 1, 7)
+        self.assert_error_at(result, "MCC200", 2, 7)
 
     def test_fail_3(self):
         code = """
@@ -38,7 +38,7 @@ class Test_MCC200(BaseTest):
                in range(3)}
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC200", 1, 7)
+        self.assert_error_at(result, "MCC200", 2, 7)
 
     def test_fail_4(self):
         code = """
@@ -46,7 +46,7 @@ class Test_MCC200(BaseTest):
                range(3)}
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC200", 1, 7)
+        self.assert_error_at(result, "MCC200", 2, 7)
 
     def test_fail_5(self):
         code = """
@@ -54,7 +54,7 @@ class Test_MCC200(BaseTest):
                ]
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC200", 1, 7 if PYTHON_38 else 8)
+        self.assert_error_at(result, "MCC200", 2, 7 if PYTHON_38 else 8)
 
     def test_fail_6(self):
         code = """
@@ -62,4 +62,4 @@ class Test_MCC200(BaseTest):
                range(10) for y in range(3)]
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC200", 1, 7 if PYTHON_38 else 8)
+        self.assert_error_at(result, "MCC200", 2, 7 if PYTHON_38 else 8)

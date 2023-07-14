@@ -11,7 +11,7 @@ class Test_MCC225(BaseTest):
                else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC225", 1, 8)
+        self.assert_error_at(result, "MCC225", 2, 8)
 
     def test_fail_2(self):
         code = """
@@ -20,11 +20,11 @@ class Test_MCC225(BaseTest):
                else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC225", 1, 8)
+        self.assert_error_at(result, "MCC225", 2, 8)
 
     def test_fail_3(self):
         code = """
         foo = (1 if True else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC225", 1, 8)
+        self.assert_error_at(result, "MCC225", 2, 8)

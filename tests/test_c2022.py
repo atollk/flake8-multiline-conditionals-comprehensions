@@ -27,11 +27,11 @@ class Test_MCC222(BaseTest):
         foo = (1 if 1 > 0 else -1 if 1 < 0 else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC222", 1, 24)
+        self.assert_error_at(result, "MCC222", 2, 24)
 
     def test_fail_2(self):
         code = """
         foo = (1 if (1 if True else 2) > 0 else -1)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC222", 1, 14)
+        self.assert_error_at(result, "MCC222", 2, 14)

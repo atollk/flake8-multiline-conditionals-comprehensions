@@ -18,7 +18,7 @@ class Test_MCC223(BaseTest):
                else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC223", 1, 8)
+        self.assert_error_at(result, "MCC223", 2, 8)
 
     def test_fail_2(self):
         code = """
@@ -27,4 +27,4 @@ class Test_MCC223(BaseTest):
                else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC223", 1, 8)
+        self.assert_error_at(result, "MCC223", 2, 8)

@@ -27,11 +27,11 @@ class Test_MCC204(BaseTest):
         foo = {x: x for x in range(10) for y in range(3) if x != 0}
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC204", 1, 7)
+        self.assert_error_at(result, "MCC204", 2, 7)
 
     def test_fail_2(self):
         code = """
         foo = (x for x in range(10))
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC204", 1, 7 if PYTHON_38 else 8)
+        self.assert_error_at(result, "MCC204", 2, 7 if PYTHON_38 else 8)

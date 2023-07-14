@@ -27,7 +27,7 @@ class Test_MCC220(BaseTest):
                0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC220", 1, 8)
+        self.assert_error_at(result, "MCC220", 2, 8)
 
     def test_fail_2(self):
         code = """
@@ -35,7 +35,7 @@ class Test_MCC220(BaseTest):
                else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC220", 1, 8)
+        self.assert_error_at(result, "MCC220", 2, 8)
 
     def test_fail_3(self):
         code = """
@@ -43,7 +43,7 @@ class Test_MCC220(BaseTest):
                20) else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC220", 1, 8)
+        self.assert_error_at(result, "MCC220", 2, 8)
 
     def test_fail_4(self):
         code = """
@@ -51,7 +51,7 @@ class Test_MCC220(BaseTest):
                10 < 20 else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC220", 1, 8)
+        self.assert_error_at(result, "MCC220", 2, 8)
 
     def test_fail_5(self):
         code = """
@@ -59,4 +59,4 @@ class Test_MCC220(BaseTest):
                if 10 < 20 else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC220", 1, 8)
+        self.assert_error_at(result, "MCC220", 2, 8)

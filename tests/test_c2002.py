@@ -25,7 +25,7 @@ class Test_MCC202(BaseTest):
                if x != 0 if y != 0}
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC202", 2, 21)
+        self.assert_error_at(result, "MCC202", 3, 21)
 
     def test_fail_2(self):
         code = """
@@ -36,7 +36,7 @@ class Test_MCC202(BaseTest):
                if y != 0}
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC202", 5, 11)
+        self.assert_error_at(result, "MCC202", 6, 11)
 
     def test_fail_3(self):
         code = """
@@ -47,4 +47,4 @@ class Test_MCC202(BaseTest):
                if y != 0}
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC202", 5, 11)
+        self.assert_error_at(result, "MCC202", 6, 11)

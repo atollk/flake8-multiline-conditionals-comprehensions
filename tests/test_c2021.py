@@ -25,4 +25,4 @@ class Test_MCC221(BaseTest):
         foo = 1 if 10 < 20 else 0
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "MCC221", 1, 1)
+        self.assert_error_at(result, "MCC221", 2, 1)
