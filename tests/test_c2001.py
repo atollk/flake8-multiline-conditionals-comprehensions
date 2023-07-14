@@ -1,9 +1,9 @@
 from tests.util import BaseTest
 
 
-class Test_C2001(BaseTest):
+class Test_MCC201(BaseTest):
     def error_code(self) -> str:
-        return "C2001"
+        return "MCC201"
 
     def test_pass_1(self):
         code = """
@@ -28,7 +28,7 @@ class Test_C2001(BaseTest):
                if x != 0}
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2001", 1, 8)
+        self.assert_error_at(result, "MCC201", 1, 8)
 
     def test_fail_2(self):
         code = """
@@ -36,7 +36,7 @@ class Test_C2001(BaseTest):
                for y in range(3) if x != 0}
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2001", 1, 8)
+        self.assert_error_at(result, "MCC201", 1, 8)
 
     def test_fail_3(self):
         code = """
@@ -44,7 +44,7 @@ class Test_C2001(BaseTest):
                for x in range(10) for y in range(3) if x != 0]
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2001", 2, 31)
+        self.assert_error_at(result, "MCC201", 2, 31)
 
     def test_fail_4(self):
         code = """
@@ -53,7 +53,7 @@ class Test_C2001(BaseTest):
                if x != 0]
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2001", 2, 31)
+        self.assert_error_at(result, "MCC201", 2, 31)
 
     def test_fail_5(self):
         code = """
@@ -61,7 +61,7 @@ class Test_C2001(BaseTest):
                0))
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2001", 1, 8)
+        self.assert_error_at(result, "MCC201", 1, 8)
 
     def test_fail_6(self):
         code = """
@@ -69,7 +69,7 @@ class Test_C2001(BaseTest):
                y in range(3) if x != 0]
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2001", 1, 8)
+        self.assert_error_at(result, "MCC201", 1, 8)
 
     def test_fail_7(self):
         code = """
@@ -77,7 +77,7 @@ class Test_C2001(BaseTest):
                in range(3) if x != 0]
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2001", 1, 8)
+        self.assert_error_at(result, "MCC201", 1, 8)
 
     def test_fail_8(self):
         code = """
@@ -85,4 +85,4 @@ class Test_C2001(BaseTest):
                range(3) if x != 0]
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2001", 1, 8)
+        self.assert_error_at(result, "MCC201", 1, 8)

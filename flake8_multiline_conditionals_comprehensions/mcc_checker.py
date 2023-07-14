@@ -12,12 +12,12 @@ ComprehensionType = Union[
 ]
 
 DEFAULT_SELECT = [
-    "C2000",
-    "C2001",
-    "C2002",
-    "C2020",
-    "C2021",
-    "C2023",
+    "MCC200",
+    "MCC201",
+    "MCC202",
+    "MCC220",
+    "MCC221",
+    "MCC223",
 ]
 
 PYTHON_36 = sys.version_info >= (3, 6)
@@ -43,7 +43,7 @@ class MCCChecker:
     @staticmethod
     def add_options(option_manager: flake8.options.manager.OptionManager):
         option_manager.add_option(
-            "--select_c20",
+            "--select_mcc2",
             type=str,
             comma_separated_list=True,
             default=DEFAULT_SELECT,
@@ -58,7 +58,7 @@ class MCCChecker:
         extra_args,
     ):
         MCCChecker.enabled_errors = [
-            int(option[1:]) for option in options.select_c20
+            int(option[1:]) for option in options.select_mcc2
         ]
 
     def _get_tokens_with_surrounding(
@@ -99,36 +99,36 @@ class MCCChecker:
                 ]
             ):
                 if 2000 in MCCChecker.enabled_errors:
-                    yield from _c2000(cast(ComprehensionType, node))
+                    yield from _mcc200(cast(ComprehensionType, node))
                 if 2001 in MCCChecker.enabled_errors:
-                    yield from _c2001(cast(ComprehensionType, node))
+                    yield from _mcc201(cast(ComprehensionType, node))
                 if 2002 in MCCChecker.enabled_errors:
-                    yield from _c2002(cast(ComprehensionType, node))
+                    yield from _mcc202(cast(ComprehensionType, node))
                 if 2003 in MCCChecker.enabled_errors:
-                    yield from _c2003(cast(ComprehensionType, node))
+                    yield from _mcc203(cast(ComprehensionType, node))
                 if 2004 in MCCChecker.enabled_errors:
-                    yield from _c2004(cast(ComprehensionType, node))
+                    yield from _mcc204(cast(ComprehensionType, node))
 
             if isinstance(node, ast.Assign) and isinstance(
                 node.value, ast.IfExp
             ):
                 if 2021 in MCCChecker.enabled_errors:
-                    yield from _c2021(
+                    yield from _mcc221(
                         node,
                         list(self._get_tokens_with_surrounding(node.value, 1)),
                     )
 
             if isinstance(node, ast.IfExp):
                 if 2020 in MCCChecker.enabled_errors:
-                    yield from _c2020(node)
+                    yield from _mcc220(node)
                 if 2022 in MCCChecker.enabled_errors:
-                    yield from _c2022(node)
+                    yield from _mcc222(node)
                 if 2023 in MCCChecker.enabled_errors:
-                    yield from _c2023(node)
+                    yield from _mcc223(node)
                 if 2024 in MCCChecker.enabled_errors:
-                    yield from _c2024(node)
+                    yield from _mcc224(node)
                 if 2025 in MCCChecker.enabled_errors:
-                    yield from _c2025(node)
+                    yield from _mcc225(node)
 
 
 ERROR_MESSAGES = {
@@ -185,7 +185,7 @@ def _error_tuple(error_code: int, node: ast.AST) -> Tuple[int, int, str, type]:
     )
 
 
-def _c2000(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
+def _mcc200(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
     """
     A comprehension expression should place each of its generators on a separate line.
     """
@@ -200,7 +200,7 @@ def _c2000(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
             yield _error_tuple(2000, node)
 
 
-def _c2001(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
+def _mcc201(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
     """
     A multiline comprehension expression should place each of its segments (map, generator, filter) on a separate line.
     """
@@ -229,7 +229,7 @@ def _c2001(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
         seen_line_nos.add(lineno(node.elt))
 
 
-def _c2002(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
+def _mcc202(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
     """
     A comprehension expression should not contain multiple filters.
     """
@@ -241,7 +241,7 @@ def _c2002(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
                 yield _error_tuple(2002, if_clause)
 
 
-def _c2003(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
+def _mcc203(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
     """
     A comprehension expression should not span over multiple lines.
     """
@@ -249,7 +249,7 @@ def _c2003(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
         yield _error_tuple(2003, node)
 
 
-def _c2004(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
+def _mcc204(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
     """
     A comprehension expression should span over multiple lines.
     """
@@ -257,7 +257,7 @@ def _c2004(node: ComprehensionType) -> Iterable[Tuple[int, int, str, type]]:
         yield _error_tuple(2004, node)
 
 
-def _c2020(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
+def _mcc220(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     A multiline conditional expression should place each of its segments on a separate line.
     """
@@ -268,7 +268,7 @@ def _c2020(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
         yield _error_tuple(2020, node)
 
 
-def _c2021(
+def _mcc221(
     node: ast.Assign, tokens: List[tokenize.TokenInfo]
 ) -> Iterable[Tuple[int, int, str, type]]:
     """
@@ -278,7 +278,7 @@ def _c2021(
         yield _error_tuple(2021, node)
 
 
-def _c2022(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
+def _mcc222(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     A conditional expression should not contain further conditional expressions.
     """
@@ -289,7 +289,7 @@ def _c2022(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
             yield _error_tuple(2022, ancestor)
 
 
-def _c2023(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
+def _mcc223(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     A conditional expression should not span over multiple lines.
     """
@@ -297,7 +297,7 @@ def _c2023(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
         yield _error_tuple(2023, node)
 
 
-def _c2024(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
+def _mcc224(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     A conditional expression should span over multiple lines.
     """
@@ -305,7 +305,7 @@ def _c2024(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
         yield _error_tuple(2024, node)
 
 
-def _c2025(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
+def _mcc225(node: ast.IfExp) -> Iterable[Tuple[int, int, str, type]]:
     """
     Conditional expressions should not be used.
     """

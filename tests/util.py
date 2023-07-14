@@ -34,7 +34,7 @@ class BaseTest(abc.ABC):
         self, code: str, only_this_error: bool
     ) -> List[ReportedMessage]:
         self.flake8dir.make_example_py(textwrap.dedent(code))
-        args = [f"--select_c20={self.error_code()}"] if only_this_error else []
+        args = [f"--select_mcc2={self.error_code()}"] if only_this_error else []
         result = self.flake8dir.run_flake8(args)
         return [ReportedMessage.from_raw(report) for report in result.out_lines]
 

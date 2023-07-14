@@ -2,9 +2,9 @@ from flake8_multiline_conditionals_comprehensions.mcc_checker import PYTHON_38
 from tests.util import BaseTest
 
 
-class Test_C2003(BaseTest):
+class Test_MCC203(BaseTest):
     def error_code(self) -> str:
-        return "C2003"
+        return "MCC203"
 
     def test_pass_1(self):
         code = """
@@ -26,7 +26,7 @@ class Test_C2003(BaseTest):
                if x != 0 if y != 0}
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2003", 1, 7)
+        self.assert_error_at(result, "MCC203", 1, 7)
 
     def test_fail_2(self):
         code = """
@@ -34,4 +34,4 @@ class Test_C2003(BaseTest):
                3)]
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2003", 1, 7 if PYTHON_38 else 8)
+        self.assert_error_at(result, "MCC203", 1, 7 if PYTHON_38 else 8)
