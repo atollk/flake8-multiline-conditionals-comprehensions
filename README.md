@@ -15,14 +15,14 @@ expressions to enforce each segment to be put on a new line.
   * [Condition Errors](#condition-errors)
 
 ## Options
-The flag `--select_c20` can be used to select the set of errors
-to include. By default, the active errors are C2000, C2001, C2002,
-C2020, C2021, C2023.
+The flag `--select_mcc2` can be used to select the set of errors
+to include. By default, the active errors are MCC200, MCC201, MCC202,
+MCC220, MCC221, MCC223.
 
 
 ## Comprehension Errors
 
-### C2000
+### MCC200
 
 A comprehension expression should place each of its generators on a 
 separate line.
@@ -40,7 +40,7 @@ separate line.
 ```
 
 
-### C2001
+### MCC201
 
 A multiline comprehension expression should place each of its segments
 (map, generator, filter) on a separate line.
@@ -60,7 +60,7 @@ for y in range(10) if x+y > 5]
 ```
 
 
-### C2002
+### MCC202
 
 A comprehension expression should not contain multiple filters.
 
@@ -72,7 +72,7 @@ A comprehension expression should not contain multiple filters.
 [x for x in range(10) if x % 2 == x % 3 == 0]
 ```
 
-### C2003
+### MCC203
 
 A comprehension expression should not span over multiple lines.
 
@@ -85,7 +85,7 @@ for x in range(10) ]
 [x+y for x in range(10)]
 ```
 
-### C2004
+### MCC204
 
 A comprehension expression should span over multiple lines.
 
@@ -102,7 +102,7 @@ for x in range(10)]
 
 ## Condition Errors
 
-### C2020
+### MCC220
 
 A multiline conditional expression should place each of its segments
 on a separate line.
@@ -119,7 +119,7 @@ else 0
 ```
 
 
-### C2021
+### MCC221
 
 A conditional expression used for assignment should be surrounded by
 parantheses.
@@ -133,7 +133,7 @@ a = (1 if something() else 0)
 ```
 
 
-### C2022
+### MCC222
 
 A conditional expression should not contain further conditional
 expressions.
@@ -152,7 +152,7 @@ else:
 ```
 
 
-### C2023
+### MCC223
 
 A conditional expression should not span over multiple lines.
 
@@ -167,7 +167,7 @@ else 0
 ```
 
 
-### C2024
+### MCC224
 
 A conditional expression should span over multiple lines.
 
@@ -182,6 +182,6 @@ else 0
 ```
 
 
-### C2025
+### MCC225
 
 Conditional expressions should not be used.

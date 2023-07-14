@@ -1,9 +1,9 @@
 from tests.util import BaseTest
 
 
-class Test_C2024(BaseTest):
+class Test_MCC224(BaseTest):
     def error_code(self) -> str:
-        return "C2024"
+        return "MCC224"
 
     def test_pass_1(self):
         code = """
@@ -27,4 +27,4 @@ class Test_C2024(BaseTest):
         foo = (1 if True else 0)
         """
         result = self.run_flake8(code, True)
-        self.assert_error_at(result, "C2024", 1, 8)
+        self.assert_error_at(result, "MCC224", 2, 8)

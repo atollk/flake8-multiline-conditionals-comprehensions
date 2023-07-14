@@ -27,15 +27,15 @@ class BaseTest(abc.ABC):
         raise NotImplementedError
 
     @pytest.fixture(autouse=True)
-    def _flake8dir(self, flake8dir):
-        self.flake8dir = flake8dir
+    def _flake8dir(self, flake8_path):
+        self.flake8_path = flake8_path
 
     def run_flake8(
         self, code: str, only_this_error: bool
     ) -> List[ReportedMessage]:
-        self.flake8dir.make_example_py(textwrap.dedent(code))
-        args = [f"--select_c20={self.error_code()}"] if only_this_error else []
-        result = self.flake8dir.run_flake8(args)
+        (self.flake8_path / "example.py").write_text(textwrap.dedent(code))
+        args = [f"--select_mcc2={self.error_code()}"] if only_this_error else []
+        result = self.flake8_path.run_flake8(args)
         return [ReportedMessage.from_raw(report) for report in result.out_lines]
 
     def assert_error_at(
